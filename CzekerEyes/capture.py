@@ -64,7 +64,7 @@ def plot_test_images(img):
 
 def board_detection_ORB(testImg):
     refImg = cv2.imread('test_img/reference2.jpg', 0)
-    cv2.imshow('reference', refImg)
+    #cv2.imshow('reference', refImg)
 
     orb = cv2.ORB_create(500)
     testImg = cv2.resize(testImg, None, fx=0.4, fy=0.4, interpolation=cv2.INTER_AREA)
@@ -152,12 +152,12 @@ def board_detection_BRISK(testImg):
         print(matrix_match(detect_tiles(warpped_board)))
         sys.stdout.flush()
 
-        detect_tiles(warpped_board)
+        #detect_tiles(warpped_board)
         warpped_board = draw_grid(warpped_board)
         warpped_board = cv2.cvtColor(warpped_board, cv2.COLOR_RGB2BGR)
         
-        cv2.imshow('warpped', warpped_board)
-        cv2.waitKey()
+        #cv2.imshow('warpped', warpped_board)
+        #cv2.waitKey()
         
         img3 = cv2.drawMatches(refImg, kp1, img2, kp2, good, None, **draw_params)
         
@@ -183,11 +183,11 @@ def draw_grid(refImg):
     # print('Drawing grid...')
     refImg = cv2.cvtColor(refImg, cv2.COLOR_RGB2BGR)
     h, w, r = refImg.shape
-    # #print(h, w, r)
+    print(h, w, r)
 
-    for i in range(0, 16):
-        widthDist = int((w - 230) / 16 * i)
-        heightDist = int((h - 230) / 16 * i)
+    for i in range(0, 15):
+        widthDist = int((w - 230) / 15 * i)
+        heightDist = int((h - 230) / 15 * i)
         # #print('widthDist', widthDist, 'heightDist', heightDist)
 
         # vertical
@@ -251,7 +251,7 @@ def show_ip_webcam():
     frame = np.array(bytearray(frameRaw), dtype=np.uint8)
     frame = cv2.imdecode(frame, -1)
         # frameResized = cv2.resize(frame, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
-    cv2.imshow('frame', frame)
+    #cv2.imshow('frame', frame)
     #k = cv2.waitKey(1)
         #if k == 27:
         #    break  # esc to quit
