@@ -3,6 +3,7 @@ import time
 import sys
 import capture as cap
 import cv2
+'''
 begin = "               " + \
         "               " + \
         "               " + \
@@ -258,12 +259,12 @@ ex15 = "               " + \
        "  maj   o  ó   " + \
        "       ćma żółć" + \
        "               "
-
+'''
 
 def main():
-    print(begin)
+    #print(begin)
     sys.stdout.flush()
-    time.sleep(15)
+    time.sleep(5)
 
     #testImg = cv2.imread('board_frame_0.png', 1)
     #cap.board_detection_BRISK(testImg)

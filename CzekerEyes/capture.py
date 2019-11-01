@@ -3,8 +3,8 @@ import time
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+#import urllib.request
 import urllib.request
-import urllib
 from letters import matrix_match
 import sys
 
@@ -20,7 +20,7 @@ def show_webcam(mirror=False):
             img = cv2.flip(frame, 1)
         cv2.imshow('my webcam', frame)
 
-        k = cv2.waitKey(1)
+        k = cv2.waitKey(10000)
         if k == 27:
             break  # esc to quit
         elif k == 32:
@@ -63,7 +63,7 @@ def plot_test_images(img):
 
 
 def board_detection_ORB(testImg):
-    refImg = cv2.imread('CzekerEyes/test_img/reference2.jpg', 0)
+    refImg = cv2.imread('test_img/reference2.jpg', 0)
     cv2.imshow('reference', refImg)
 
     orb = cv2.ORB_create(500)
@@ -94,19 +94,19 @@ def board_detection_BRISK(testImg):
     start = time.time()
 
     # Load and resize images
-    refImg = cv2.imread('CzekerEyes/test_img/reference4.png', 0)
+    refImg = cv2.imread('test_img/reference4.png', 0)
     colorTestImg = cv2.cvtColor(testImg, cv2.COLOR_RGB2BGR)
     testImg = cv2.cvtColor(testImg, cv2.COLOR_RGB2GRAY)
 
-    if (testImg.size > 307200):
-        testImg = cv2.resize(testImg, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
+    #if (testImg.size > 307200):
+        #testImg = cv2.resize(testImg, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
         # testImgLowRes = cv2.resize(testImg, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_AREA)
-        testImgBlur = cv2.blur(testImg, (5, 5))
-        colorTestImg = cv2.resize(colorTestImg, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
-    if (refImg.size > 300000):
-        refImg = cv2.resize(refImg, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
+    testImgBlur = cv2.blur(testImg, (5, 5))
+        #colorTestImg = cv2.resize(colorTestImg, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
+    #if (refImg.size > 300000):
+        #refImg = cv2.resize(refImg, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
         # refImgLowRes = cv2.resize(refImg, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_AREA)
-        refImgBlur = cv2.blur(refImg, (5, 5))
+    refImgBlur = cv2.blur(refImg, (5, 5))
 
     # Create BRISK, detect keypoints and descriptions
     brisk = cv2.BRISK_create(40)
@@ -152,31 +152,31 @@ def board_detection_BRISK(testImg):
         print(matrix_match(detect_tiles(warpped_board)))
         sys.stdout.flush()
 
-        # #detect_tiles(warpped_board)
-        # warpped_board = draw_grid(warpped_board)
-        # warpped_board = cv2.cvtColor(warpped_board, cv2.COLOR_RGB2BGR)
-        #
-        # # cv2.imshow('warpped', warpped_board)
-        # # cv2.waitKey()
-        #
-        # img3 = cv2.drawMatches(refImg, kp1, img2, kp2, good, None, **draw_params)
-        #
-        # #print('Finished!')
-        # #print('Total time: ', time.time() - start)
-        #
-        # plt.figure(dpi=450)
-        # plt.subplot(2,1,1), plt.imshow(warpped_board, 'gray'), plt.title('Warpped board'), plt.axis('off')
-        # plt.subplot(2,1,2), plt.imshow(img3, 'gray'), plt.title('Matching'), plt.axis('off')
-        # plt.show()
+        detect_tiles(warpped_board)
+        warpped_board = draw_grid(warpped_board)
+        warpped_board = cv2.cvtColor(warpped_board, cv2.COLOR_RGB2BGR)
+        
+        cv2.imshow('warpped', warpped_board)
+        cv2.waitKey()
+        
+        img3 = cv2.drawMatches(refImg, kp1, img2, kp2, good, None, **draw_params)
+        
+        print('finished!')
+        print('total time: ', time.time() - start)
+        
+        plt.figure(dpi=450)
+        plt.subplot(2,1,1), plt.imshow(warpped_board, 'gray'), plt.title('warpped board'), plt.axis('off')
+        plt.subplot(2,1,2), plt.imshow(img3, 'gray'), plt.title('matching'), plt.axis('off')
+        plt.show()
     else:
         # print('Not enough matches found!')
         matchesMask = None
 
-    # # Plot results
-    # plt.figure(dpi=450)
-    # result = np.zeros((1000,1000,3), np.uint8)
-    # result = cv2.drawMatchesKnn(refImg, kp1, testImg, kp2, good, result)
-    # plt.imshow(result), plt.show()
+    # Plot results
+    plt.figure(dpi=450)
+    result = np.zeros((1000,1000,3), np.uint8)
+    result = cv2.drawMatchesKnn(refImg, kp1, testImg, kp2, good, result)
+    plt.imshow(result), plt.show()
 
 
 def draw_grid(refImg):
@@ -240,41 +240,47 @@ def detect_tiles(refImg):
 
 
 def show_ip_webcam():
-    url = "http://192.168.43.1:8080//shot.jpg"
-    photoUrl = "http://192.168.43.1:8080//photoaf.jpg"
+    #url = "/cygdrive/c/Users/Murtadha/Documents/GitHub/scrabble-vision/CzekerEyes/test_img/IMG_0990.png"
+    #photoUrl = "/cygdrive/c/Users/Murtadha/Documents/GitHub/scrabble-vision/CzekerEyes/test_img/IMG_0990.png"
     img_counter = 0
-    while True:
-        frameRaw = urllib.request.urlopen(url)
-        frame = np.array(bytearray(frameRaw.read()), dtype=np.uint8)
-        frame = cv2.imdecode(frame, -1)
+    #while True:
+    #frameRaw = urllib.request.urlopen('file://test_img/IMG_0990.png')
+    with open("test_img/IMG_0990.png", "r+b") as image:
+        frameRaw = image.read()
+        #frame = np.array(bytearray(frameRaw), dtype=np.uint8)
+    frame = np.array(bytearray(frameRaw), dtype=np.uint8)
+    frame = cv2.imdecode(frame, -1)
         # frameResized = cv2.resize(frame, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
-        cv2.imshow('frame', frame)
-        k = cv2.waitKey(1)
-        if k == 27:
-            break  # esc to quit
+    cv2.imshow('frame', frame)
+    #k = cv2.waitKey(1)
+        #if k == 27:
+        #    break  # esc to quit
         # elif k == 32:
         #     # Spacebar pressed
         #     img_name = 'board_frame_{}.png'.format(img_counter)
         #     cv2.imwrite(img_name, frame)
         #     #print("{} written!".format(img_name))
         #     img_counter += 1
-        elif k == 32:
+    #elif k == 32:
             # Spacebar pressed
-            frameRaw = urllib.request.urlopen(photoUrl)
-            frame = np.array(bytearray(frameRaw.read()), dtype=np.uint8)
-            frame = cv2.imdecode(frame, -1)
+            #frameRaw = urllib.request.urlopen(photoUrl)
+        #with open("test_img/IMG_0990.png", "rb") as image:
+            #frameRaw = image.read()
+            #frame = np.array(bytearray(frameRaw), dtype=np.uint8)
+            #frame = np.array(bytearray(frameRaw))
+            #frame = cv2.imdecode(frame, -1)
             # frame = cv2.resize(frame, None, fx=0.2, fy=0.2, interpolation=cv2.INTER_AREA)
-            img_name = 'board_frame_{}.png'.format(img_counter)
-            cv2.imwrite(img_name, frame)
+    img_name = 'board_frame_{}.png'.format(img_counter)
+    cv2.imwrite(img_name, frame)
             # print("{} written!".format(img_name))
-            img_counter += 1
+    img_counter += 1
 
-            board_detection_BRISK(frame)
+    board_detection_BRISK(frame)
             #print("get photo")
 
 def main():
     # testImg = cv2.imread('test_img/one_place.jpg', 0)
-    testImg = cv2.imread('CzekerEyes/test_img/board_frame_11.png', 1)
+    testImg = cv2.imread('test_img/board_frame_11.png', 1)
 
     board_detection_BRISK(testImg)
 
