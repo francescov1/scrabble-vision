@@ -42,10 +42,10 @@ def tesseract_recognition(name, thresh=False, blur=False):
 
     # load the image as a PIL/Pillow image, apply OCR, and then delete
     # the temporary file
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
     #text = pytesseract.image_to_string(Image.open(filename), lang="pol",
                                        #config="-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ --psm 10")
-    text = pytesseract.image_to_string(Image.open(filename), config="--oem=0 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ --psm 10 ")
+    text = pytesseract.image_to_string(Image.open(filename), config="-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ --psm 10 ")
     os.remove(filename)
     # #print("lol")
     #print(text)

@@ -98,15 +98,15 @@ def board_detection_BRISK(testImg):
     colorTestImg = cv2.cvtColor(testImg, cv2.COLOR_RGB2BGR)
     testImg = cv2.cvtColor(testImg, cv2.COLOR_RGB2GRAY)
 
-    #if (testImg.size > 307200):
-        #testImg = cv2.resize(testImg, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
-        # testImgLowRes = cv2.resize(testImg, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_AREA)
-    testImgBlur = cv2.blur(testImg, (5, 5))
-        #colorTestImg = cv2.resize(colorTestImg, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
-    #if (refImg.size > 300000):
-        #refImg = cv2.resize(refImg, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
-        # refImgLowRes = cv2.resize(refImg, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_AREA)
-    refImgBlur = cv2.blur(refImg, (5, 5))
+    if (testImg.size > 307200):
+        testImg = cv2.resize(testImg, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
+        #testImgLowRes = cv2.resize(testImg, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_AREA)
+        testImgBlur = cv2.blur(testImg, (5, 5))
+        colorTestImg = cv2.resize(colorTestImg, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
+    if (refImg.size > 300000):
+        refImg = cv2.resize(refImg, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
+        #refImgLowRes = cv2.resize(refImg, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_AREA)
+        refImgBlur = cv2.blur(refImg, (5, 5))
 
     # Create BRISK, detect keypoints and descriptions
     brisk = cv2.BRISK_create(40)
@@ -185,15 +185,25 @@ def draw_grid(refImg):
     h, w, r = refImg.shape
     print(h, w, r)
 
-    for i in range(0, 15):
-        widthDist = int((w - 230) / 15 * i)
-        heightDist = int((h - 230) / 15 * i)
+    for i in range(0, 16):
+        widthDist = int((w - 230) / 16 * i)
+        heightDist = int((h - 600) / 16 * i)
         # #print('widthDist', widthDist, 'heightDist', heightDist)
 
         # vertical
-        cv2.line(refImg, (210 + widthDist, 140), (210 + widthDist, h - 270), (0, 255, 0), 8, 1)
+        cv2.line(refImg, (210 + widthDist, 140), (210 + widthDist, h - 640), (0, 255, 0), 8, 1)
         # horizontal
-        cv2.line(refImg, (210, 140 + heightDist), (w - 195, 140 + heightDist), (0, 255, 0), 8, 1)
+        cv2.line(refImg, (210, 120 + heightDist), (w - 195, 120 + heightDist), (0, 255, 0), 8, 1)
+
+    # for i in range(0, 15):
+    #     widthDist = int((w - 230) / 15 * i)
+    #     heightDist = int((h - 230) / 15 * i)
+    #     # #print('widthDist', widthDist, 'heightDist', heightDist)
+
+    #     # vertical
+    #     cv2.line(refImg, (210 + widthDist, 140), (210 + widthDist, h - 270), (0, 255, 0), 8, 1)
+    #     # horizontal
+    #     cv2.line(refImg, (210, 140 + heightDist), (w - 195, 140 + heightDist), (0, 255, 0), 8, 1)
 
     return refImg
 
@@ -203,10 +213,13 @@ def detect_tiles(refImg):
     refImg = cv2.cvtColor(refImg, cv2.COLOR_RGB2BGR)
     tiles = []
     h, w, r = refImg.shape
+    print(h,w,r)
 
     width = (210 + int((w - 230) / 16 * 1)) - (210 + int((w - 230) / 16 * 0))
-    height = (140 + int((h - 230) / 16 * 1)) - (140 + int((h - 230) / 16 * 0))
-    start = [(210 + int((w - 230) / 16 * 0)), (140 + int((h - 230) / 16 * 0))]
+    height = (140 + int((h - 600) / 16 * 1)) - (140 + int((h - 230) / 16 * 0))
+    start = [(210 + int((w - 230) / 16 * 0)), (140 + int((h - 600) / 16 * 0))]
+
+    print(width, height, start)
 	
     f = open('wynik.txt', "w+")
 
