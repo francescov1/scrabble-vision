@@ -186,14 +186,14 @@ def draw_grid(refImg):
     print(h, w, r)
 
     for i in range(0, 16):
-        widthDist = int((w - 230) / 16 * i)
-        heightDist = int((h - 600) / 16 * i)
+        widthDist = int((w - 190) / 16 * i)
+        heightDist = int((h - 645) / 16 * i)
         # #print('widthDist', widthDist, 'heightDist', heightDist)
 
         # vertical
-        cv2.line(refImg, (210 + widthDist, 140), (210 + widthDist, h - 640), (0, 255, 0), 8, 1)
+        cv2.line(refImg, (190 + widthDist, 180), (190 + widthDist, h - 645), (0, 255, 0), 8, 1)
         # horizontal
-        cv2.line(refImg, (210, 120 + heightDist), (w - 195, 120 + heightDist), (0, 255, 0), 8, 1)
+        cv2.line(refImg, (190, 180 + heightDist), (w - 195, 180 + heightDist), (0, 255, 0), 8, 1)
 
     # for i in range(0, 15):
     #     widthDist = int((w - 230) / 15 * i)
@@ -215,9 +215,9 @@ def detect_tiles(refImg):
     h, w, r = refImg.shape
     print(h,w,r)
 
-    width = (210 + int((w - 230) / 16 * 1)) - (210 + int((w - 230) / 16 * 0))
-    height = (140 + int((h - 600) / 16 * 1)) - (140 + int((h - 230) / 16 * 0))
-    start = [(210 + int((w - 230) / 16 * 0)), (140 + int((h - 600) / 16 * 0))]
+    width = (190 + int((w - 190) / 16 * 1)) - (190 + int((w - 190) / 16 * 0))
+    height = (180 + int((h - 645) / 16 * 1)) - (180 + int((h - 645) / 16 * 0))
+    start = [(190 + int((w - 190) / 16 * 0)), (180 + int((h - 645) / 16 * 0))]
 
     print(width, height, start)
 	
