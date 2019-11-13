@@ -186,14 +186,17 @@ def draw_grid(refImg):
     print(h, w, r)
 
     for i in range(0, 16):
-        widthDist = int((w - 190) / 16 * i)
-        heightDist = int((h - 645) / 16 * i)
+        widthDist = int(((w - 190) / 16 - 1) * i)
+        heightDist = int(((h - 645) / 16 - 1) * i)
         # #print('widthDist', widthDist, 'heightDist', heightDist)
 
         # vertical
-        cv2.line(refImg, (190 + widthDist, 180), (190 + widthDist, h - 645), (0, 255, 0), 8, 1)
+        vertical_start = 207
+
+        cv2.line(refImg, (vertical_start + widthDist, 180), (vertical_start + widthDist, h - 613), (0, 255, 0), 8, 1)
         # horizontal
-        cv2.line(refImg, (190, 180 + heightDist), (w - 195, 180 + heightDist), (0, 255, 0), 8, 1)
+
+        cv2.line(refImg, (vertical_start, 180 + heightDist), (w - 159, 180 + heightDist), (0, 255, 0), 8, 1)
 
     # for i in range(0, 15):
     #     widthDist = int((w - 230) / 15 * i)
@@ -204,7 +207,7 @@ def draw_grid(refImg):
     #     cv2.line(refImg, (210 + widthDist, 140), (210 + widthDist, h - 270), (0, 255, 0), 8, 1)
     #     # horizontal
     #     cv2.line(refImg, (210, 140 + heightDist), (w - 195, 140 + heightDist), (0, 255, 0), 8, 1)
-
+    cv2.imwrite("GridDrawnImage.png",refImg)
     return refImg
 
 
