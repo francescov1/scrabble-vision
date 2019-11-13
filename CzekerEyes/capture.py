@@ -151,7 +151,7 @@ def board_detection_BRISK(testImg):
 
         warpped_board = cv2.warpPerspective(colorTestImg, matrix, (3000, 3000))
         print(matrix_match(detect_tiles(warpped_board)))
-        sys.stdout.flush()
+        #sys.stdout.flush()
 
         #detect_tiles(warpped_board)
         warpped_board = draw_grid(warpped_board)
@@ -234,6 +234,7 @@ def detect_tiles(refImg):
     
     os.remove("wynik.txt")
     f = open('wynik.txt', "w+")
+    f1 = open('MaskedTileHSV', "w+")
 
 
     for i in range(0, 15):
@@ -245,21 +246,42 @@ def detect_tiles(refImg):
             shapeMask = cv2.inRange(tile, lower_black_RGB, upper_black_RGB)
             cv2.imwrite("SavedTiles/TileBlackMaskedRBG" + str(i) + str(j) + ".png",shapeMask)
 
+            ## TODO: try doing bgr mask then converting to hsv
 
             tile_HSV = cv2.cvtColor(tile, cv2.COLOR_BGR2HSV)
+            #_, tile_HSV_frame = tile_HSV
             #cv2.imwrite("SavedTiles/TileHSV" + str(i) + str(j) + ".png",tile_HSV)
-            lower_black_HSV = np.array([0,0,0])
-            upper_black_HSV = np.array([180,255,40])
+            lower_black_HSV = np.array([0,0,0],np.uint8)
+            upper_black_HSV = np.array([180,255,50],np.uint8)
             shapeMask_HSV = cv2.inRange(tile_HSV, lower_black_HSV, upper_black_HSV)
+            #shapeMask_HSV = cv2.inRange(tile_HSV_frame, lower_black_HSV, upper_black_HSV)
+            #shapeMask_RGB = cv2.cvtColor(shapeMask_HSV, cv2.COLOR_HSV2BGR)
+            #shapeMask_HSV = cv2.cvtColor(shapeMask_RGB, cv2.COLOR_BGR2HSV)
+
             cv2.imwrite("SavedTiles/TileBlackMaskedHSV" + str(i) + str(j) + ".png",shapeMask_HSV)
-
-            h, s, v = tile_HSV.T
-
+            '''
+            print("tile hsv:")
+            print(tile_HSV)
+            print("\nshape mask hsv:")
+            print(shapeMask_HSV)
+            print("\n\ntile hsv.T:")
+            print(tile_HSV.T)
+            print("\nshape mask hsv.T:")
+            print(shapeMask_HSV.T)
+            '''    
+            #hsv1, hsv2 = shapeMask_HSV.T
+            #f1.write("[" + str(i)+ "," + str(j) + "] ")
+            #f1.write("med: " + str(np.median(s))+", avg: " + (str(np.average(s))+"\n"))
             # result = abs(result)
             # #print('hist correl',  result)
             #print(np.average(s))
-            f.write("[" + str(i)+ "," + str(j) + "] ")
+           
+            #h, s, v = shapeMask_HSV.T
+            h,s,v = tile_HSV.T
+            #print("S for s")
+            f.write("[" + str(i)+ "," + str(j) + "]\n")
             f.write("med: " + str(np.median(s))+", avg: " + (str(np.average(s))+"\n"))
+            #f.write("hsv2 - med: " + str(np.median(hsv2))+", avg: " + (str(np.average(hsv2))+"\n"))
             if (np.median(s) < 40):
                 tiles.append(tile)
             else:
