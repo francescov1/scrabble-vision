@@ -7,6 +7,7 @@ from matplotlib import pyplot as plt
 import urllib.request
 from letters import matrix_match
 import sys
+import os
 
 GOOD_MATCH_RATIO = 0.1
 
@@ -178,6 +179,8 @@ def board_detection_BRISK(testImg):
     result = cv2.drawMatchesKnn(refImg, kp1, testImg, kp2, good, result)
     plt.imshow(result), plt.show()
 
+vertical_start = 207
+horizontal_start = 180
 
 def draw_grid(refImg):
     # print('Drawing grid...')
@@ -185,18 +188,18 @@ def draw_grid(refImg):
     h, w, r = refImg.shape
     print(h, w, r)
 
+    width = ((w - 190) / 16 - 1)
+    height = ((h - 645) / 16 - 1)
+
     for i in range(0, 16):
-        widthDist = int(((w - 190) / 16 - 1) * i)
-        heightDist = int(((h - 645) / 16 - 1) * i)
+        widthDist = int(width * i)
+        heightDist = int(height * i)
         # #print('widthDist', widthDist, 'heightDist', heightDist)
 
-        # vertical
-        vertical_start = 207
-
-        cv2.line(refImg, (vertical_start + widthDist, 180), (vertical_start + widthDist, h - 613), (0, 255, 0), 8, 1)
+        cv2.line(refImg, (vertical_start + widthDist, horizontal_start), (vertical_start + widthDist, h - 613), (0, 255, 0), 8, 1)
         # horizontal
 
-        cv2.line(refImg, (vertical_start, 180 + heightDist), (w - 159, 180 + heightDist), (0, 255, 0), 8, 1)
+        cv2.line(refImg, (vertical_start, horizontal_start + heightDist), (w - 159, horizontal_start + heightDist), (0, 255, 0), 8, 1)
 
     # for i in range(0, 15):
     #     widthDist = int((w - 230) / 15 * i)
@@ -218,30 +221,45 @@ def detect_tiles(refImg):
     h, w, r = refImg.shape
     print(h,w,r)
 
-    width = (190 + int((w - 190) / 16 * 1)) - (190 + int((w - 190) / 16 * 0))
-    height = (180 + int((h - 645) / 16 * 1)) - (180 + int((h - 645) / 16 * 0))
-    start = [(190 + int((w - 190) / 16 * 0)), (180 + int((h - 645) / 16 * 0))]
+    width = int((w - 190) / 16 * 1)
+    height = int((h - 645) / 16 * 1)
+    
+    #width = vertical_start + int((w - 190) / 16 - 1)
+    #height = horizontal_start + int((h - 645) / 16 - 1)
 
+    start = [vertical_start, horizontal_start]
+    #start = [vertical_start, horizontal_start]
+    
     print(width, height, start)
-	
+    
+    os.remove("wynik.txt")
     f = open('wynik.txt', "w+")
+
 
     for i in range(0, 15):
         for j in range(0, 15):
             tile = refImg[start[1] + height * i: start[1] + height * (i + 1),
                    start[0] + width * j: start[0] + width * (j + 1)]
+            lower_black_RGB = np.array([0,0,0])
+            upper_black_RGB = np.array([30,30,30])
+            shapeMask = cv2.inRange(tile, lower_black_RGB, upper_black_RGB)
+            cv2.imwrite("SavedTiles/TileBlackMaskedRBG" + str(i) + str(j) + ".png",shapeMask)
+
 
             tile_HSV = cv2.cvtColor(tile, cv2.COLOR_BGR2HSV)
+            #cv2.imwrite("SavedTiles/TileHSV" + str(i) + str(j) + ".png",tile_HSV)
+            lower_black_HSV = np.array([0,0,0])
+            upper_black_HSV = np.array([180,255,40])
+            shapeMask_HSV = cv2.inRange(tile_HSV, lower_black_HSV, upper_black_HSV)
+            cv2.imwrite("SavedTiles/TileBlackMaskedHSV" + str(i) + str(j) + ".png",shapeMask_HSV)
 
             h, s, v = tile_HSV.T
 
             # result = abs(result)
             # #print('hist correl',  result)
             #print(np.average(s))
-            f.write(str(i)+" ")
-            f.write(str(j)+" ")
-            f.write(str(np.median(s))+"\n")
-            f.write(str(np.average(s))+"\n")
+            f.write("[" + str(i)+ "," + str(j) + "] ")
+            f.write("med: " + str(np.median(s))+", avg: " + (str(np.average(s))+"\n"))
             if (np.median(s) < 40):
                 tiles.append(tile)
             else:
