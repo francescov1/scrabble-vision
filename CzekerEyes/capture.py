@@ -241,24 +241,35 @@ def detect_tiles(refImg):
         for j in range(0, 15):
             tile = refImg[start[1] + height * i: start[1] + height * (i + 1),
                    start[0] + width * j: start[0] + width * (j + 1)]
-            lower_black_RGB = np.array([0,0,0])
-            upper_black_RGB = np.array([30,30,30])
-            shapeMask = cv2.inRange(tile, lower_black_RGB, upper_black_RGB)
-            cv2.imwrite("SavedTiles/TileBlackMaskedRBG" + str(i) + str(j) + ".png",shapeMask)
+            #lower_black_RGB = np.array([0,0,0])
+            #upper_black_RGB = np.array([30,30,30])
+            #shapeMask = cv2.inRange(tile, lower_black_RGB, upper_black_RGB)
+            #cv2.imwrite("SavedTiles/TileBlackMaskedRBG" + str(i) + str(j) + ".png",shapeMask)
 
             ## TODO: try doing bgr mask then converting to hsv
 
             tile_HSV = cv2.cvtColor(tile, cv2.COLOR_BGR2HSV)
             #_, tile_HSV_frame = tile_HSV
             #cv2.imwrite("SavedTiles/TileHSV" + str(i) + str(j) + ".png",tile_HSV)
-            lower_black_HSV = np.array([0,0,0],np.uint8)
-            upper_black_HSV = np.array([180,255,50],np.uint8)
+            lower_black_HSV = np.array([0,0,0])
+            upper_black_HSV = np.array([180,255,35])
             shapeMask_HSV = cv2.inRange(tile_HSV, lower_black_HSV, upper_black_HSV)
+            tiles.append(tile)
             #shapeMask_HSV = cv2.inRange(tile_HSV_frame, lower_black_HSV, upper_black_HSV)
             #shapeMask_RGB = cv2.cvtColor(shapeMask_HSV, cv2.COLOR_HSV2BGR)
             #shapeMask_HSV = cv2.cvtColor(shapeMask_RGB, cv2.COLOR_BGR2HSV)
 
-            cv2.imwrite("SavedTiles/TileBlackMaskedHSV" + str(i) + str(j) + ".png",shapeMask_HSV)
+            #maskHeightHSV = shapeMask_HSV.shape[0]
+            #maskWidthHSV = shapeMask_HSV.shape[1]
+            #color = []
+            #for i in range(maskHeightHSV):
+                #for j in range(maskWidthHSV):
+                    #color.append(shapeMask_HSV[i,j])
+                    #pixel intensity sum
+                    #pixel color count function
+                    #
+
+            #cv2.imwrite("SavedTiles/TileBlackMaskedHSV" + str(i) + str(j) + ".png",shapeMask_HSV)
             '''
             print("tile hsv:")
             print(tile_HSV)
@@ -279,19 +290,20 @@ def detect_tiles(refImg):
             #h, s, v = shapeMask_HSV.T
             h,s,v = tile_HSV.T
             #print("S for s")
-            f.write("[" + str(i)+ "," + str(j) + "]\n")
-            f.write("med: " + str(np.median(s))+", avg: " + (str(np.average(s))+"\n"))
+            #f.write("[" + str(i)+ "," + str(j) + "]\n")
+            #f.write("med: " + str(np.median(s))+", avg: " + (str(np.average(s))+"\n"))
             #f.write("hsv2 - med: " + str(np.median(hsv2))+", avg: " + (str(np.average(hsv2))+"\n"))
-            if (np.median(s) < 40):
-                tiles.append(tile)
-            else:
-                tiles.append(0)
+           # if (np.median(s) < 40):
+            #    tiles.append(tile)
+            #else:
+            #    tiles.append(0)
             # tiles.append(tile)
 
     # for i in range(0, tiles.__len__()):
     #     cv2.imshow('{}'.format(i), tiles[i])
     #     cv2.waitKey()
     f.close()
+    #print(tiles)
     return tiles
 
 
