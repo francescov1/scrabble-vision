@@ -156,15 +156,15 @@ def board_detection_BRISK(testImg):
         #detect_tiles(warpped_board)
         warpped_board = draw_grid(warpped_board)
         warpped_board = cv2.cvtColor(warpped_board, cv2.COLOR_RGB2BGR)
-        
+
         #cv2.imshow('warpped', warpped_board)
         #cv2.waitKey()
-        
+
         img3 = cv2.drawMatches(refImg, kp1, img2, kp2, good, None, **draw_params)
-        
+
         print('finished!')
         print('total time: ', time.time() - start)
-        
+
         plt.figure(dpi=450)
         plt.subplot(2,1,1), plt.imshow(warpped_board, 'gray'), plt.title('warpped board'), plt.axis('off')
         plt.subplot(2,1,2), plt.imshow(img3, 'gray'), plt.title('matching'), plt.axis('off')
@@ -213,37 +213,74 @@ def draw_grid(refImg):
     cv2.imwrite("GridDrawnImage.png",refImg)
     return refImg
 
+letter_indicies = [
+    [0,0],
+    [0,1],
+    [0,13],
+    [0,14],
+    [2,2],
+    [2,3],
+    [2,4],
+    [2,11],
+    [3,11],
+    [4,11],
+    [7,1],
+    [7,2],
+    [7,3],
+    [7,10],
+    [8,7],
+    [8,8],
+    [8,9],
+    [8,10],
+    [8,11],
+    [9,10],
+    [10,10],
+    [11,2],
+    [11,3],
+    [11,4],
+    [11,5],
+    [11,10],
+    [14,0],
+    [14,1],
+    [14,2],
+    [14,12],
+    [14,13],
+    [14,14]
+]
 
 def detect_tiles(refImg):
     # print('Detecting tiles...')
     refImg = cv2.cvtColor(refImg, cv2.COLOR_RGB2BGR)
+
     tiles = []
+    tile_indicies = []
     h, w, r = refImg.shape
     print(h,w,r)
 
     width = int((w - 190) / 16 * 1)
     height = int((h - 645) / 16 * 1)
-    
-    #width = vertical_start + int((w - 190) / 16 - 1)
-    #height = horizontal_start + int((h - 645) / 16 - 1)
 
     start = [vertical_start, horizontal_start]
-    #start = [vertical_start, horizontal_start]
-    
+
     print(width, height, start)
-    
+
     os.remove("wynik.txt")
     f = open('wynik.txt', "w+")
     f1 = open('MaskedTileHSV', "w+")
 
+    min_letter_black = 5000
+    min_letter = []
+    max_non_letter_black = 0
+    max_non_letter = []
 
     for i in range(0, 15):
         for j in range(0, 15):
             tile = refImg[start[1] + height * i: start[1] + height * (i + 1),
                    start[0] + width * j: start[0] + width * (j + 1)]
-            #lower_black_RGB = np.array([0,0,0])
-            #upper_black_RGB = np.array([30,30,30])
-            #shapeMask = cv2.inRange(tile, lower_black_RGB, upper_black_RGB)
+            lower_black_RGB = np.array([0,0,0])
+            upper_black_RGB = np.array([30,30,30])
+
+            shapeMask = cv2.inRange(tile, lower_black_RGB, upper_black_RGB)
             #cv2.imwrite("SavedTiles/TileBlackMaskedRBG" + str(i) + str(j) + ".png",shapeMask)
 
             ## TODO: try doing bgr mask then converting to hsv
@@ -259,51 +296,56 @@ def detect_tiles(refImg):
             #shapeMask_RGB = cv2.cvtColor(shapeMask_HSV, cv2.COLOR_HSV2BGR)
             #shapeMask_HSV = cv2.cvtColor(shapeMask_RGB, cv2.COLOR_BGR2HSV)
 
-            #maskHeightHSV = shapeMask_HSV.shape[0]
-            #maskWidthHSV = shapeMask_HSV.shape[1]
-            #color = []
-            #for i in range(maskHeightHSV):
-                #for j in range(maskWidthHSV):
-                    #color.append(shapeMask_HSV[i,j])
-                    #pixel intensity sum
-                    #pixel color count function
-                    #
+            maskHeightHSV = shapeMask_HSV.shape[0]
+            maskWidthHSV = shapeMask_HSV.shape[1]
 
-            #cv2.imwrite("SavedTiles/TileBlackMaskedHSV" + str(i) + str(j) + ".png",shapeMask_HSV)
-            '''
-            print("tile hsv:")
-            print(tile_HSV)
-            print("\nshape mask hsv:")
-            print(shapeMask_HSV)
-            print("\n\ntile hsv.T:")
-            print(tile_HSV.T)
-            print("\nshape mask hsv.T:")
-            print(shapeMask_HSV.T)
-            '''    
-            #hsv1, hsv2 = shapeMask_HSV.T
-            #f1.write("[" + str(i)+ "," + str(j) + "] ")
-            #f1.write("med: " + str(np.median(s))+", avg: " + (str(np.average(s))+"\n"))
-            # result = abs(result)
-            # #print('hist correl',  result)
-            #print(np.average(s))
-           
-            #h, s, v = shapeMask_HSV.T
-            h,s,v = tile_HSV.T
-            #print("S for s")
-            #f.write("[" + str(i)+ "," + str(j) + "]\n")
-            #f.write("med: " + str(np.median(s))+", avg: " + (str(np.average(s))+"\n"))
-            #f.write("hsv2 - med: " + str(np.median(hsv2))+", avg: " + (str(np.average(hsv2))+"\n"))
-           # if (np.median(s) < 40):
-            #    tiles.append(tile)
-            #else:
-            #    tiles.append(0)
-            # tiles.append(tile)
+            black_pixels = 0
+            white_pixels = 0
+            for x in range(maskHeightHSV):
+                for y in range(maskWidthHSV):
+                    color = shapeMask_HSV[x,y]
+                    if (color == 0):
+                        shapeMask_HSV[x,y] = 255
+                        # since inverted, this is white now
+                        white_pixels += 1
+                    elif (color == 255):
+                        shapeMask_HSV[x,y] = 0
+                        # since inverted, this is black now
+                        black_pixels += 1
+                    else:
+                        print("Should not get here")
 
-    # for i in range(0, tiles.__len__()):
-    #     cv2.imshow('{}'.format(i), tiles[i])
-    #     cv2.waitKey()
+            idx = [i,j]
+
+            # skip center star for now as it causes issues (7,7)
+            if idx != [7,7]:
+                if idx in letter_indicies:
+                    if black_pixels < min_letter_black:
+                        min_letter_black = black_pixels
+                        min_letter = idx
+                else:
+                    if black_pixels > max_non_letter_black:
+                        max_non_letter_black = black_pixels
+                        max_non_letter = idx
+
+
+            f.write("[" + str(i)+ "," + str(j) + "]: ")
+            f.write('black(' + str(black_pixels) + ')\n')
+
+            cv2.imwrite("SavedTiles/TileBlackMaskedHSV," + str(i) + "," + str(j) + ".png",shapeMask_HSV)
+
+            # skip center star for now as it causes issues (7,7)
+            if (black_pixels > 1000 and idx != [7,7]):
+                tiles.append(tile)
+                tile_indicies.append(idx)
+            else:
+                tiles.append(0)
+
     f.close()
-    #print(tiles)
+    print("Max non letter black: " + str(max_non_letter) + ", black: " + str(max_non_letter_black))
+    print("Min letter black: " + str(min_letter) + ", black: " + str(min_letter_black))
+    print("Tiles with letters inside:")
+    print(tile_indicies)
     return tiles
 
 
