@@ -266,7 +266,6 @@ def detect_tiles(refImg):
 
     os.remove("wynik.txt")
     f = open('wynik.txt', "w+")
-    f1 = open('MaskedTileHSV', "w+")
 
     min_letter_black = 5000
     min_letter = []
