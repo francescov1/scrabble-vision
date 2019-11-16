@@ -290,7 +290,7 @@ def detect_tiles(refImg):
             lower_black_HSV = np.array([0,0,0])
             upper_black_HSV = np.array([180,255,35])
             shapeMask_HSV = cv2.inRange(tile_HSV, lower_black_HSV, upper_black_HSV)
-            tiles.append(tile)
+
             #shapeMask_HSV = cv2.inRange(tile_HSV_frame, lower_black_HSV, upper_black_HSV)
             #shapeMask_RGB = cv2.cvtColor(shapeMask_HSV, cv2.COLOR_HSV2BGR)
             #shapeMask_HSV = cv2.cvtColor(shapeMask_RGB, cv2.COLOR_BGR2HSV)
