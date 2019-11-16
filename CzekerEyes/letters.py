@@ -9,7 +9,7 @@ import json
 import re
 import math
 import numpy as np
-
+import sys
 
 def ich(x):
     return {
@@ -55,7 +55,10 @@ def tesseract_recognition(name, thresh=False, blur=False):
     cv2.imwrite(filename, gray)
     # load the image as a PIL/Pillow image, apply OCR, and then delete
     # the temporary file
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    if sys.platform == 'darwin':
+        pytesseract.pytesseract.tesseract_cmd = "tesseract"
+    else:
+        pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
     #text = pytesseract.image_to_string(Image.open(filename), lang="pol",
                                        #config="-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ --psm 10")
     text = pytesseract.image_to_string(Image.open(filename), config="-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ --psm 10 ")

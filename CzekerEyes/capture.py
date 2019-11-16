@@ -264,7 +264,6 @@ def detect_tiles(refImg):
 
     print(width, height, start)
 
-    os.remove("wynik.txt")
     f = open('wynik.txt', "w+")
 
     min_letter_black = 5000
