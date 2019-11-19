@@ -330,11 +330,11 @@ def detect_tiles(refImg):
             f.write("[" + str(i)+ "," + str(j) + "]: ")
             f.write('black(' + str(black_pixels) + ')\n')
 
-            cv2.imwrite("SavedTiles/TileBlackMaskedHSV," + str(i) + "," + str(j) + ".png",shapeMask_HSV)
+            cv2.imwrite("Tiles/hsv_mask/" + str(i) + "," + str(j) + ".png",shapeMask_HSV)
 
             # skip center star for now as it causes issues (7,7)
             if (black_pixels > 1000 and idx != [7,7]):
-                tiles.append(tile)
+                tiles.append(shapeMask_HSV)
                 tile_indicies.append(idx)
             else:
                 tiles.append(0)

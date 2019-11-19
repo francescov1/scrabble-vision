@@ -11,46 +11,39 @@ import math
 import numpy as np
 import sys
 
+
 def ich(x):
     return {
-        '|': 'I',
-        'l': 'I',
-        '1': 'I',
-		'0': 'O'
+        '|': 'I'
+#        'l': 'I',
+#        '1': 'I',
+#		'0': 'O'
     }.get(x, x)
 
 
-def tesseract_recognition(name, thresh=False, blur=False):
-    # load the example image and convert it to grayscale
-    #gray = cv2.cvtColor(name, cv2.COLOR_BGR2GRAY)[20:153, 20:153]
-    gray = cv2.cvtColor(name, cv2.COLOR_BGR2GRAY)
-    #tile_HSV = cv2.cvtColor(name, cv2.COLOR_BGR2HSV)
-    #_, tile_HSV_frame = tile_HSV
-    #cv2.imwrite("SavedTiles/TileHSV" + str(i) + str(j) + ".png",tile_HSV)
-    #lower_black_HSV = np.array([0,0,0])
-    #upper_black_HSV = np.array([180,255,30])
-    #shapeMask_HSV = cv2.inRange(tile_HSV, lower_black_HSV, upper_black_HSV)
+def tesseract_recognition(i, img):
 
-    # check to see if we should apply thresholding to preprocess the
-    # image
-    if thresh:
-        #gray = cv2.adaptiveThreshold(gray, 255,cv2.ADAPTIVE_THRESH_MEAN_C, \
-        #                     cv2.THRESH_BINARY,11,2)
-        #gray = cv2.threshold(gray,127,255,cv2.THRESH_BINARY)[1]
-                             #cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-        # Otsu's thresholding after Gaussian filtering
-        gray = cv2.GaussianBlur(gray,(5,5),0)
-        gray = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]
+    gray = img
 
-    # make a check to see if median blurring should be done to remove
-    # noise
+    #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #tile_HSV = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-    #if blur:
-        #gray = cv2.medianBlur(gray, 3)
+    gray = cv2.bilateralFilter(gray, 9, 75, 75)
+    #gray = cv2.medianBlur(gray, 3)
+
+    gray = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+
+    #gray = cv2.adaptiveThreshold(gray, 255,cv2.ADAPTIVE_THRESH_MEAN_C, \
+    #                     cv2.THRESH_BINARY,11,2)
+    #gray = cv2.threshold(gray,127,255,cv2.THRESH_BINARY)[1]
+                         #cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+    # Otsu's thresholding after Gaussian filtering
+    #gray = cv2.GaussianBlur(gray,(5,5),0)
+    #gray = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]
 
     # write the grayscale image to disk as a temporary file so we can
     # apply OCR to it
-    filename = "{}.png".format(os.getpid())
+    filename = "Tiles/final/{}.png".format(i)
     #cv2.imwrite(filename, gray)
     cv2.imwrite(filename, gray)
     # load the image as a PIL/Pillow image, apply OCR, and then delete
@@ -59,16 +52,15 @@ def tesseract_recognition(name, thresh=False, blur=False):
         pytesseract.pytesseract.tesseract_cmd = "tesseract"
     else:
         pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    #text = pytesseract.image_to_string(Image.open(filename), lang="pol",
-                                       #config="-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ --psm 10")
-    text = pytesseract.image_to_string(Image.open(filename), config="-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ --psm 10 ")
+
+    text = pytesseract.image_to_string(Image.open(filename), config="-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ| --psm 10 ")
     #print(text)
-    os.remove(filename)
+    #os.remove(filename)
     # #print("lol")
     #print(text)
 
     # show the output images
-    #cv2.imshow("Image", name)
+    #cv2.imshow("Image", img)
     #cv2.imshow("Output", gray)
     #cv2.waitKey(0)
     if not text:
@@ -330,12 +322,12 @@ def matrix_match(matrix):
     #refrence = "test_img/board_frame_00.png"
     string = ""
     index = 1
-    for img in matrix:
+    for i, img in enumerate(matrix):
         # print("index {}".format(index))
         if isinstance(img, int):
             string += " "
         else:
-            string += tesseract_recognition(img, True, True)
+            string += tesseract_recognition(i, img)
             # string += template_match(refrence, img, index)
         index += 1
     return string.lower()
