@@ -1,6 +1,4 @@
 from matplotlib import pyplot as plt
-# from capture import plot_test_images
-# from capture import show_webcam
 from PIL import Image
 import pytesseract
 import cv2
