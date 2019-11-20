@@ -1,12 +1,11 @@
 import time
-
 import cv2
+import sys
 import numpy as np
 from matplotlib import pyplot as plt
-import urllib.request
-from letters import matrix_match
-import sys
-import os
+from letters import matrix_match, match_from_last
+
+BOARD_SIZE = np.float32([[0, 0], [3000, 0], [0, 3000], [3000, 3000]])
 
 def board_detection_BRISK(testImg):
     start = time.time()
@@ -61,14 +60,27 @@ def board_detection_BRISK(testImg):
                            matchesMask=matchesMask,
                            flags=2)
 
-        board_size = np.float32([[0, 0], [3000, 0], [0, 3000], [3000, 3000]])
-        matrix = cv2.getPerspectiveTransform(dst2, board_size)
+
+        matrix = cv2.getPerspectiveTransform(dst2, BOARD_SIZE)
 
         warpped_board = cv2.warpPerspective(colorTestImg, matrix, (3000, 3000))
-        print(matrix_match(detect_tiles(warpped_board)))
 
-        warpped_board = draw_grid(warpped_board)
-        warpped_board = cv2.cvtColor(warpped_board, cv2.COLOR_RGB2BGR)
+        if len(sys.argv) > 1:
+            if sys.argv[1] == "final":
+                print("Using final tiles from previous run")
+                print(match_from_last("final"))
+            if sys.argv[1] == "pre":
+                print("Using pre altered tiles from previous run")
+                print(match_from_last("pre_alter"))
+        else:
+            tiles = detect_tiles(warpped_board)
+            print(matrix_match(tiles))
+
+        grid_board = draw_grid(warpped_board)
+
+        # at this point grid_board is saved
+
+        grid_board = cv2.cvtColor(grid_board, cv2.COLOR_RGB2BGR)
 
         img3 = cv2.drawMatches(refImg, kp1, img2, kp2, good, None, **draw_params)
 
@@ -76,7 +88,7 @@ def board_detection_BRISK(testImg):
         print('total time: ', time.time() - start)
 
         plt.figure(dpi=450)
-        plt.subplot(2,1,1), plt.imshow(warpped_board, 'gray'), plt.title('warpped board'), plt.axis('off')
+        plt.subplot(2,1,1), plt.imshow(grid_board, 'gray'), plt.title('warpped board'), plt.axis('off')
         plt.subplot(2,1,2), plt.imshow(img3, 'gray'), plt.title('matching'), plt.axis('off')
         plt.show()
     else:
@@ -108,6 +120,7 @@ def draw_grid(refImg):
 
     cv2.imwrite("GridDrawnImage.png",refImg)
     return refImg
+
 
 letter_indicies = [
     [0,0],
@@ -232,17 +245,17 @@ def detect_tiles(refImg):
 
 
 def start_capture():
-    img_counter = 0
     with open("test_img/IMG_0990.png", "r+b") as image:
         frameRaw = image.read()
     frame = np.array(bytearray(frameRaw), dtype=np.uint8)
     frame = cv2.imdecode(frame, -1)
 
+    #img_counter = 0
     #img_name = 'board_frame_{}.png'.format(img_counter)
     #cv2.imwrite(img_name, frame)
-    img_counter += 1
 
     board_detection_BRISK(frame)
+
 
 
 def main():
