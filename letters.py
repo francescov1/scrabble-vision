@@ -76,13 +76,17 @@ def matrix_match(matrix):
 
             idx = str(row)+","+str(col)
 
-
             if idx in check:
-                # now check all around this word
+
                 img = alter_image(img)
                 filename = "Tiles/final/{}.png".format(i)
                 cv2.imwrite(filename, img)
                 char = tesseract_recognition(filename).lower()
+
+                # TODO: at this point, we have found the first new tile
+                # (on the edge of previous tiles). Need to now figure out what
+                # direction the word is going and then follow it until it finishes
+
 
                 board_arr[row, col] = char
                 board_str += ("| " + char + " ")
