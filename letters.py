@@ -10,7 +10,7 @@ def alter_image(img):
     return img
 
 def tesseract_recognition(filename):
-    if sys.platform == 'darwin':
+    if sys.platform == 'darwin' or sys.platform == 'linux':
         pytesseract.pytesseract.tesseract_cmd = "tesseract"
     else:
         pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
