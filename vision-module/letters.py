@@ -30,10 +30,13 @@ def alter_image(img):
 def tesseract_recognition(filename):
 
     if sys.platform == 'darwin':
-        pytesseract.pytesseract.tesseract_cmd = "tesseract"
+        pytesseract.pytesseract.tesseract_cmd = r'tesseract'
+    elif (sys.platform == 'linux2' or sys.platform == 'linux'):
+        pytesseract.pytesseract.tesseract_cmd = r'tesseract'
     else:
         pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
+    #Raspberry pi 4.1 debian buster version commented out here 
+    #text = pytesseract.image_to_string(Image.open(filename), config='--psm 10 --oem 2 -c tessedit_char_whitelist=ABCDEFGHIJKLM$    
     text = pytesseract.image_to_string(Image.open(filename), config="-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ| --psm 10 ")
 
     #print(text)

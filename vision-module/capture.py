@@ -273,10 +273,16 @@ def detect_tiles(refImg):
 
 
 def start_capture():
+    #Capturing using PiCamera in BGR Format commented out here
+    #rasImage = capture_image()
+    #frame = rasImage
+
     with open("test_img/IMG_0990.png", "r+b") as image:
         frameRaw = image.read()
     frame = np.array(bytearray(frameRaw), dtype=np.uint8)
     frame = cv2.imdecode(frame, -1)
+
+
 
     #img_counter = 0
     #img_name = 'board_frame_{}.png'.format(img_counter)
