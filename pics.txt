@@ -1,9 +1,0 @@
-testImg = cv2.imread('CzekerEyes/test_img/board_frame_11.png', 1)
-refImg = cv2.imread('CzekerEyes/test_img/reference2.jpg', 0)
-    
-
-refImg = cv2.imread('CzekerEyes/test_img/reference4.png', 0)
-
-refrence = "test_img/board_frame_00.png"
-   
-img = cv2.imread('test_img/alfabet.jpg', 0)
