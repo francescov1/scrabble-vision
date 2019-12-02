@@ -9,12 +9,6 @@ import math
 import numpy as np
 import sys
 
-
-def ich(x):
-    return {
-        '|': 'I'
-    }.get(x, x)
-
 def alter_image(img):
     #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     #tile_HSV = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -58,27 +52,28 @@ def tesseract_recognition(filename):
             return ich(x)
     return ich(text[0])
 
+def ich(x):
+    return {
+        '|': 'I',
+    }.get(x, x)
 
-def create_json():
-    files = []
-    folder = "test_img/letters/"
-    refrence = "test_img/board_frame_00.png"
-    regex = re.compile(r'/\w+\.')
-    for file in os.listdir(folder):
-        files.append(folder + file)
-    letters_json = {}
-    for file in files:
-        match = re.search(regex, file)
-        if match:
-            name = match.group(0)[1:-1]
-        # else:
-        # print("FUCK")
-        tmp = template_match_json(refrence, file)
-        letters_json[name] = tmp
-    x = json.dumps(letters_json)
-    f = open("letters.json", 'w')
-    f.write(x)
-
+'''
+[['f', 'g', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'u', 'r']
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+ [' ', ' ', 's', 'i', 'd', ' ', ' ', ' ', ' ', ' ', ' ', 't', ' ', ' ', ' ']
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'h', ' ', ' ', ' ']
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'o', ' ', ' ', ' ']
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+ [' ', 'l', 't', 'h', ' ', ' ', ' ', ' ', ' ', ' ', 'c', ' ', ' ', ' ', ' ']
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'o', ' ', ' ', ' ', ' ']
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'z', ' ', ' ', ' ', ' ']
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 's', ' ', ' ', ' ', ' ']
+ [' ', ' ', 'p', 'k', 'e', 'a', ' ', ' ', ' ', ' ', 'c', ' ', ' ', ' ', ' ']
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+ ['n', 'm', 'y', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'e', 'w', 'a']]
+'''
 
 def matrix_match(matrix):
     #refrence = "test_img/board_frame_00.png"
@@ -106,7 +101,7 @@ def sort_tiles(name):
 
 # stage = pre_alter or final
 def match_from_last(stage):
-    i = 0;
+    i = 0
     string = ""
     for root, subdirs, files in os.walk("Tiles/" + stage):
             files.sort(key=sort_tiles)
@@ -138,23 +133,3 @@ def match_from_last(stage):
             break
 
     return string.lower()
-
-def main():
-    # # #show_webcam(mirror=True)
-    # files = []
-    # folder = "test_img/letters_crop/"
-    # refrence = "test_img/board_frame_00.png"
-    # for file in os.listdir(folder):
-    #     files.append(folder + file)
-    #     # plot_test_images(folder + file)
-    #     # tesseract_recognition(folder + file)
-    #
-    # test = ""
-    # for file in files:
-    #     test += template_match(refrence, file)
-    # #print(test)
-    create_json()
-
-
-if __name__ == '__main__':
-    main()

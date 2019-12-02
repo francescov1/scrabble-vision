@@ -8,15 +8,21 @@ from letters import matrix_match, match_from_last
 BOARD_SIZE = np.float32([[0, 0], [3000, 0], [0, 3000], [3000, 3000]])
 
 def print_board(char_str):
+    board_arr = np.empty((15,15), dtype=str)
+
     board_str = "\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
     row = 0
     for i, char in enumerate(char_str):
         col = i%15
 
         board_str += ("| " + char + " ")
+
+        board_arr[row, col] = char
+
         if col == 14:
             row += 1
             board_str += "|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+            #print(board_arr)
 
     print(board_str)
 
@@ -279,12 +285,9 @@ def start_capture():
     board_detection_BRISK(frame)
 
 
-
 def main():
     testImg = cv2.imread('test_img/board_frame_11.png', 1)
     board_detection_BRISK(testImg)
-    # show_ip_webcam()
-
 
 if __name__ == '__main__':
     main()
