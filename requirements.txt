@@ -3,6 +3,7 @@ botocore==1.12.16
 cached-property==1.5.1
 cement==2.8.2
 certifi==2019.9.11
+Click==7.0
 colorama==0.3.9
 cycler==0.10.0
 docker==3.5.0
@@ -11,10 +12,14 @@ docker-pycreds==0.3.0
 dockerpty==0.4.1
 docopt==0.6.2
 docutils==0.14
+Flask==1.1.1
 idna==2.6
+itsdangerous==1.1.0
+Jinja2==2.10.3
 jmespath==0.9.3
 jsonschema==2.6.0
 kiwisolver==1.1.0
+MarkupSafe==1.1.1
 matplotlib==3.1.1
 numpy==1.17.3
 opencv-contrib-python==4.1.1.26
@@ -32,3 +37,4 @@ termcolor==1.1.0
 texttable==0.9.1
 urllib3==1.22
 wcwidth==0.1.7
+Werkzeug==0.16.0
