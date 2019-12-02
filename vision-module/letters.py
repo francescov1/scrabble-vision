@@ -22,9 +22,10 @@ def tesseract_recognition(filename):
     if not text:
         return " "
     for x in text:
-        if x.isalpha() and x == '|':
-            return 'I'
-    return ich(text[0])
+        if x.isalpha():
+            return x
+
+    return { '|': 'I' }.get(x, x)
 
 
 '''
