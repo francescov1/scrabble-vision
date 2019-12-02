@@ -98,26 +98,26 @@ def board_detection_BRISK(testImg):
             #print('total time: ', time.time() - start)
             print_board(char_str)
 
-            grid_board = draw_grid(warpped_board)
+            #grid_board = draw_grid(warpped_board)
 
             # at this point grid_board is saved
 
-            grid_board = cv2.cvtColor(grid_board, cv2.COLOR_RGB2BGR)
+            #grid_board = cv2.cvtColor(grid_board, cv2.COLOR_RGB2BGR)
 
-            img3 = cv2.drawMatches(refImg, kp1, img2, kp2, good, None, **draw_params)
+            #img3 = cv2.drawMatches(refImg, kp1, img2, kp2, good, None, **draw_params)
 
 
 
-            plt.figure(dpi=450)
-            plt.subplot(2,1,1), plt.imshow(grid_board, 'gray'), plt.title('warpped board'), plt.axis('off')
-            plt.subplot(2,1,2), plt.imshow(img3, 'gray'), plt.title('matching'), plt.axis('off')
-            plt.show()
+            #plt.figure(dpi=450)
+            #plt.subplot(2,1,1), plt.imshow(grid_board, 'gray'), plt.title('warpped board'), plt.axis('off')
+            #plt.subplot(2,1,2), plt.imshow(img3, 'gray'), plt.title('matching'), plt.axis('off')
+            #plt.show()
 
             # Plot results
-            plt.figure(dpi=450)
-            result = np.zeros((1000,1000,3), np.uint8)
-            result = cv2.drawMatchesKnn(refImg, kp1, testImg, kp2, good, result)
-            plt.imshow(result), plt.show()
+            #plt.figure(dpi=450)
+            #result = np.zeros((1000,1000,3), np.uint8)
+            #result = cv2.drawMatchesKnn(refImg, kp1, testImg, kp2, good, result)
+            #plt.imshow(result), plt.show()
 
     else:
         # print('Not enough matches found!')
