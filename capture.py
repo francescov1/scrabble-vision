@@ -86,11 +86,6 @@ def detect_tiles(refImg):
 
     start = [vertical_start, horizontal_start]
 
-    min_letter_black = 5000
-    min_letter = []
-    max_non_letter_black = 0
-    max_non_letter = []
-
     for i in range(0, 15):
         for j in range(0, 15):
             tile = refImg[start[1] + height * i: start[1] + height * (i + 1),
