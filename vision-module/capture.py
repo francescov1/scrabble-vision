@@ -25,6 +25,7 @@ def print_board(char_str):
             #print(board_arr)
 
     print(board_str)
+    return board_arr
 
 def board_detection_BRISK(testImg):
     start = time.time()
@@ -101,9 +102,13 @@ def board_detection_BRISK(testImg):
             char_str = matrix_match(tiles)
 
             print('\nfinished!')
-            #print('total time: ', time.time() - start)
-            print_board(char_str)
+            print('total time: ', time.time() - start)
 
+            board_arr = print_board(char_str)
+
+            return board_arr.tolist()
+
+            '''
             grid_board = draw_grid(warpped_board)
 
             # at this point grid_board is saved
@@ -124,10 +129,10 @@ def board_detection_BRISK(testImg):
             result = np.zeros((1000,1000,3), np.uint8)
             result = cv2.drawMatchesKnn(refImg, kp1, testImg, kp2, good, result)
             plt.imshow(result), plt.show()
+            '''
 
     else:
-        # print('Not enough matches found!')
-        matchesMask = None
+        print('Not enough matches found!')
 
 vertical_start = 207
 horizontal_start = 180
@@ -271,6 +276,13 @@ def detect_tiles(refImg):
     print(tile_indicies)
     return tiles
 
+def convert_image(image):
+    frame_raw = image.read()
+    frame = np.array(bytearray(frame_raw), dtype=np.uint8)
+    frame = cv2.imdecode(frame, -1)
+
+    board_arr = board_detection_BRISK(frame)
+    return board_arr
 
 def start_capture():
     with open("test_img/IMG_0990.png", "r+b") as image:
