@@ -5,7 +5,7 @@ from letters import matrix_match
 
 BOARD_SIZE = np.float32([[0, 0], [3000, 0], [0, 3000], [3000, 3000]])
 
-def board_detection_BRISK(testImg):
+def board_detection_BRISK(testImg, prev_board):
     start = time.time()
 
     # Load and resize images
@@ -61,13 +61,12 @@ def board_detection_BRISK(testImg):
         warpped_board = cv2.warpPerspective(colorTestImg, matrix, (3000, 3000))
 
         tiles = detect_tiles(warpped_board)
-        board_arr = matrix_match(tiles)
+        board_arr = matrix_match(tiles, prev_board)
 
         print('\nfinished!')
         print('total time: ', time.time() - start)
 
-        return board_arr.tolist()
-
+        return board_arr
     else:
         print('Not enough matches found!')
 
@@ -77,14 +76,14 @@ horizontal_start = 180
 def detect_tiles(refImg):
     refImg = cv2.cvtColor(refImg, cv2.COLOR_RGB2BGR)
 
-    tiles = []
-
     h, w, r = refImg.shape
 
     width = int((w - 190) / 16 * 1)
     height = int((h - 645) / 16 * 1)
 
     start = [vertical_start, horizontal_start]
+
+    tiles_mat = [[None for j in range(15)] for i in range(15)]
 
     for i in range(0, 15):
         for j in range(0, 15):
@@ -119,16 +118,17 @@ def detect_tiles(refImg):
 
             # skip center star for now as it causes issues (7,7)
             if (black_pixels > 1000 and idx != [7,7]):
-                tiles.append(shapeMask_HSV)
+                tiles_mat[i][j] = shapeMask_HSV
             else:
-                tiles.append(0)
+                tiles_mat[i][j] = 0
 
-    return tiles
+    return tiles_mat
 
-def convert_image(image):
+
+def convert_image(image, prev_board = None):
     frame_raw = image.read()
     frame = np.array(bytearray(frame_raw), dtype=np.uint8)
     frame = cv2.imdecode(frame, -1)
 
-    board_arr = board_detection_BRISK(frame)
+    board_arr = board_detection_BRISK(frame, prev_board)
     return board_arr
