@@ -5,25 +5,6 @@ from letters import matrix_match
 
 BOARD_SIZE = np.float32([[0, 0], [3000, 0], [0, 3000], [3000, 3000]])
 
-def print_board(char_str):
-    board_arr = np.empty((15,15), dtype=str)
-
-    board_str = "\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-    row = 0
-    for i, char in enumerate(char_str):
-        col = i%15
-
-        board_str += ("| " + char + " ")
-
-        board_arr[row, col] = char
-
-        if col == 14:
-            row += 1
-            board_str += "|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-
-    print(board_str)
-    return board_arr
-
 def board_detection_BRISK(testImg):
     start = time.time()
 
@@ -80,12 +61,10 @@ def board_detection_BRISK(testImg):
         warpped_board = cv2.warpPerspective(colorTestImg, matrix, (3000, 3000))
 
         tiles = detect_tiles(warpped_board)
-        char_str = matrix_match(tiles)
+        board_arr = matrix_match(tiles)
 
         print('\nfinished!')
         print('total time: ', time.time() - start)
-
-        board_arr = print_board(char_str)
 
         return board_arr.tolist()
 
@@ -99,7 +78,7 @@ def detect_tiles(refImg):
     refImg = cv2.cvtColor(refImg, cv2.COLOR_RGB2BGR)
 
     tiles = []
-    tile_indicies = []
+
     h, w, r = refImg.shape
 
     width = int((w - 190) / 16 * 1)
@@ -146,7 +125,6 @@ def detect_tiles(refImg):
             # skip center star for now as it causes issues (7,7)
             if (black_pixels > 1000 and idx != [7,7]):
                 tiles.append(shapeMask_HSV)
-                tile_indicies.append(idx)
             else:
                 tiles.append(0)
 
