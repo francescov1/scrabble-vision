@@ -1,9 +1,7 @@
 import time
 import cv2
-import sys
 import numpy as np
-from matplotlib import pyplot as plt
-from letters import matrix_match, match_from_last
+from letters import matrix_match
 
 BOARD_SIZE = np.float32([[0, 0], [3000, 0], [0, 3000], [3000, 3000]])
 
@@ -22,7 +20,6 @@ def print_board(char_str):
         if col == 14:
             row += 1
             board_str += "|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-            #print(board_arr)
 
     print(board_str)
     return board_arr
@@ -72,7 +69,6 @@ def board_detection_BRISK(testImg):
 
         pts2 = np.float32([[0, 0], [w - 1, 0], [0, h - 1], [w - 1, h - 1]]).reshape(-1, 1, 2)
         dst2 = cv2.perspectiveTransform(pts2, M)
-
         img2 = cv2.polylines(testImg, [np.int32(dst)], True, 255, 3, cv2.LINE_AA)
 
         draw_params = dict(matchColor=(0, 255, 0),
@@ -80,56 +76,18 @@ def board_detection_BRISK(testImg):
                            matchesMask=matchesMask,
                            flags=2)
 
-
         matrix = cv2.getPerspectiveTransform(dst2, BOARD_SIZE)
-
         warpped_board = cv2.warpPerspective(colorTestImg, matrix, (3000, 3000))
 
-        if len(sys.argv) > 1:
-            if sys.argv[1] == "final":
-                print("Using final tiles from previous run")
-                char_str = match_from_last("final")
+        tiles = detect_tiles(warpped_board)
+        char_str = matrix_match(tiles)
 
-            elif sys.argv[1] == "pre":
-                print("Using pre altered tiles from previous run")
-                char_str = match_from_last("pre_alter")
+        print('\nfinished!')
+        print('total time: ', time.time() - start)
 
-            print('\nfinished!')
-            print('total time: ', time.time() - start)
-            print_board(char_str)
-        else:
-            tiles = detect_tiles(warpped_board)
-            char_str = matrix_match(tiles)
+        board_arr = print_board(char_str)
 
-            print('\nfinished!')
-            print('total time: ', time.time() - start)
-
-            board_arr = print_board(char_str)
-
-            return board_arr.tolist()
-
-            '''
-            grid_board = draw_grid(warpped_board)
-
-            # at this point grid_board is saved
-
-            grid_board = cv2.cvtColor(grid_board, cv2.COLOR_RGB2BGR)
-
-            img3 = cv2.drawMatches(refImg, kp1, img2, kp2, good, None, **draw_params)
-
-
-
-            plt.figure(dpi=450)
-            plt.subplot(2,1,1), plt.imshow(grid_board, 'gray'), plt.title('warpped board'), plt.axis('off')
-            plt.subplot(2,1,2), plt.imshow(img3, 'gray'), plt.title('matching'), plt.axis('off')
-            plt.show()
-
-            # Plot results
-            plt.figure(dpi=450)
-            result = np.zeros((1000,1000,3), np.uint8)
-            result = cv2.drawMatchesKnn(refImg, kp1, testImg, kp2, good, result)
-            plt.imshow(result), plt.show()
-            '''
+        return board_arr.tolist()
 
     else:
         print('Not enough matches found!')
@@ -137,75 +95,17 @@ def board_detection_BRISK(testImg):
 vertical_start = 207
 horizontal_start = 180
 
-def draw_grid(refImg):
-    refImg = cv2.cvtColor(refImg, cv2.COLOR_RGB2BGR)
-    h, w, r = refImg.shape
-    #print(h, w, r)
-
-    width = ((w - 190) / 16 - 1)
-    height = ((h - 645) / 16 - 1)
-
-    for i in range(0, 16):
-        widthDist = int(width * i)
-        heightDist = int(height * i)
-        cv2.line(refImg, (vertical_start + widthDist, horizontal_start), (vertical_start + widthDist, h - 613), (0, 255, 0), 8, 1)
-        cv2.line(refImg, (vertical_start, horizontal_start + heightDist), (w - 159, horizontal_start + heightDist), (0, 255, 0), 8, 1)
-
-    cv2.imwrite("GridDrawnImage.png",refImg)
-    return refImg
-
-
-letter_indicies = [
-    [0,0],
-    [0,1],
-    [0,13],
-    [0,14],
-    [2,2],
-    [2,3],
-    [2,4],
-    [2,11],
-    [3,11],
-    [4,11],
-    [7,1],
-    [7,2],
-    [7,3],
-    [7,10],
-    [8,7],
-    [8,8],
-    [8,9],
-    [8,10],
-    [8,11],
-    [9,10],
-    [10,10],
-    [11,2],
-    [11,3],
-    [11,4],
-    [11,5],
-    [11,10],
-    [14,0],
-    [14,1],
-    [14,2],
-    [14,12],
-    [14,13],
-    [14,14]
-]
-
 def detect_tiles(refImg):
     refImg = cv2.cvtColor(refImg, cv2.COLOR_RGB2BGR)
 
     tiles = []
     tile_indicies = []
     h, w, r = refImg.shape
-    #print(h,w,r)
 
     width = int((w - 190) / 16 * 1)
     height = int((h - 645) / 16 * 1)
 
     start = [vertical_start, horizontal_start]
-
-    #print(width, height, start)
-
-    f = open('wynik.txt', "w+")
 
     min_letter_black = 5000
     min_letter = []
@@ -216,8 +116,6 @@ def detect_tiles(refImg):
         for j in range(0, 15):
             tile = refImg[start[1] + height * i: start[1] + height * (i + 1),
                    start[0] + width * j: start[0] + width * (j + 1)]
-
-            #cv2.imwrite("Tiles/og_tiles/" + str(i) + "," + str(j) + ".png",tile)
 
             tile_HSV = cv2.cvtColor(tile, cv2.COLOR_BGR2HSV)
             lower_black_HSV = np.array([0,0,0])
@@ -246,34 +144,12 @@ def detect_tiles(refImg):
             idx = [i,j]
 
             # skip center star for now as it causes issues (7,7)
-            if idx != [7,7]:
-                if idx in letter_indicies:
-                    if black_pixels < min_letter_black:
-                        min_letter_black = black_pixels
-                        min_letter = idx
-                else:
-                    if black_pixels > max_non_letter_black:
-                        max_non_letter_black = black_pixels
-                        max_non_letter = idx
-
-
-            f.write("[" + str(i)+ "," + str(j) + "]: ")
-            f.write('black(' + str(black_pixels) + ')\n')
-
-            cv2.imwrite("Tiles/hsv_mask/" + str(i) + "," + str(j) + ".png",shapeMask_HSV)
-
-            # skip center star for now as it causes issues (7,7)
             if (black_pixels > 1000 and idx != [7,7]):
                 tiles.append(shapeMask_HSV)
                 tile_indicies.append(idx)
             else:
                 tiles.append(0)
 
-    f.close()
-    #print("Max non letter black: " + str(max_non_letter) + ", black: " + str(max_non_letter_black))
-    #print("Min letter black: " + str(min_letter) + ", black: " + str(min_letter_black))
-    print("Tiles with letters inside:")
-    print(tile_indicies)
     return tiles
 
 def convert_image(image):
@@ -283,23 +159,3 @@ def convert_image(image):
 
     board_arr = board_detection_BRISK(frame)
     return board_arr
-
-def start_capture():
-    with open("test_img/IMG_0990.png", "r+b") as image:
-        frameRaw = image.read()
-    frame = np.array(bytearray(frameRaw), dtype=np.uint8)
-    frame = cv2.imdecode(frame, -1)
-
-    #img_counter = 0
-    #img_name = 'board_frame_{}.png'.format(img_counter)
-    #cv2.imwrite(img_name, frame)
-
-    board_detection_BRISK(frame)
-
-
-def main():
-    testImg = cv2.imread('test_img/board_frame_11.png', 1)
-    board_detection_BRISK(testImg)
-
-if __name__ == '__main__':
-    main()
