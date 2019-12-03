@@ -116,8 +116,7 @@ def detect_tiles(refImg):
 
             idx = [i,j]
 
-            # skip center star for now as it causes issues (7,7)
-            if (black_pixels > 1000 and idx != [7,7]):
+            if (black_pixels > 1000):
                 tiles_mat[i][j] = shapeMask_HSV
             else:
                 tiles_mat[i][j] = 0
