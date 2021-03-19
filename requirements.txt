@@ -25,7 +25,7 @@ numpy==1.17.3
 opencv-contrib-python==4.1.1.26
 opencv-python==4.1.1.26
 pathspec==0.5.5
-Pillow==6.2.1
+Pillow==8.1.1
 pyparsing==2.4.2
 pytesseract==0.3.0
 python-dateutil==2.7.3
