@@ -22,7 +22,7 @@ kiwisolver==1.1.0
 MarkupSafe==1.1.1
 matplotlib==3.1.1
 numpy==1.17.3
-opencv-contrib-python==4.1.1.26
+opencv-contrib-python==4.2.0.32
 opencv-python==4.1.1.26
 pathspec==0.5.5
 Pillow==6.2.1
